@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import { Request, Router } from "express";
 import _ from "lodash";
+import { authMiddleWare } from "middleware";
 import auth from "middleware/auth";
 import { User, validate } from "models";
 import { UserType } from "types";
@@ -29,6 +30,17 @@ router.post("/", async (req, res) => {
     .header("Authorization", token)
     .header("access-control-expose-headers", "Authorization")
     .send(_.pick(user, ["_id", "name", "email"]));
+});
+
+router.get("/:email", authMiddleWare, async (req, res) => {
+  const user = await User.findOne({ email: req.params.email });
+  if (!user) return res.status(404).send("User not found.");
+  delete user.password;
+  res.send({
+    name: user.name,
+    email: user.email,
+    id: user._id,
+  });
 });
 
 export default router;
