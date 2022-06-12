@@ -12,7 +12,6 @@ router.post("/", authMiddleWare, async (req, res) => {
   });
   await group.save();
 
-  console.log(group);
   res.send(group);
 });
 
