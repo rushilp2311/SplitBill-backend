@@ -2,13 +2,12 @@ import bcrypt from "bcrypt";
 import { Request, Router } from "express";
 import _ from "lodash";
 import { authMiddleWare } from "middleware";
-import auth from "middleware/auth";
 import { User, validate } from "models";
 import { UserType } from "types";
 
 const router = Router();
 
-router.get("/me", auth, async (req: Request & { user: UserType }, res) => {
+router.get("/me", authMiddleWare, async (req: Request & { user: UserType }, res) => {
   const user = await User.findById(req.user._id).select("-password");
   res.send(user);
 });
