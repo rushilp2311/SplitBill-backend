@@ -1,5 +1,4 @@
 import Joi from "joi";
-("joi");
 import mongoose from "mongoose";
 import { UserType } from "types";
 
