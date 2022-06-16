@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authMiddleWare } from "middleware";
-import { Group, User } from "models";
+import { Expense, Group, User } from "models";
 
 const router = Router();
 
@@ -17,7 +17,15 @@ router.post("/", authMiddleWare, async (req, res) => {
 
 router.get("/member/:memberId", authMiddleWare, async (req, res) => {
   const memberId = req.params.memberId;
-  const groups = await Group.find({ members: memberId });
+  let groups = await Group.find({ members: memberId }).lean();
+  groups = groups.map(async (group) => {
+    const totalExpenses = await Expense.countDocuments({ group: group._id });
+    return {
+      ...group,
+      totalExpenses,
+    };
+  });
+  groups = await Promise.all(groups);
   res.send(groups);
 });
 
@@ -28,7 +36,8 @@ router.get("/:groupId", authMiddleWare, async (req, res) => {
       password: 0,
     })
     .lean({ virtuals: true });
-  res.send(group);
+  const totalExpenses = await Expense.countDocuments({ group: group._id });
+  res.send({ ...group, totalExpenses });
 });
 
 router.delete(
@@ -51,7 +60,6 @@ router.delete(
 );
 
 router.post("/:groupId/member/:memberId", authMiddleWare, async (req, res) => {
-  console.log("Called");
   const groupId = req.params.groupId;
   const memberId = req.params.memberId;
   const group = await Group.findById(groupId);
@@ -64,7 +72,6 @@ router.post("/:groupId/member/:memberId", authMiddleWare, async (req, res) => {
   }
   group.members.push(memberId);
   await group.save();
-//   console.log("Called", group);
   res.send(group);
 });
 

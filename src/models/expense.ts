@@ -28,6 +28,11 @@ const expenseSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  membersBalance: {
+    type: Array,
+    required: true,
+    default: [],
+  },
 });
 
 const Expense = mongoose.model("Expense", expenseSchema);
