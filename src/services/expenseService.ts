@@ -1,7 +1,7 @@
 const calculateSplit = (paidBy, members, amount) => {
   const splittedAmount = +Number(amount / members.length).toFixed(2);
   const membersBalance = members.map((member) => {
-    if (member._id.toString() === paidBy) {
+    if (member._id.toString() === paidBy.toString()) {
       return {
         memberId: member._id,
         name: member.name,
@@ -18,4 +18,18 @@ const calculateSplit = (paidBy, members, amount) => {
   return membersBalance;
 };
 
-export { calculateSplit };
+const updateMemberBalances = async (expenses, members) => {
+  let updatedMemberBalances;
+  if (expenses) {
+    updatedMemberBalances = expenses.map(({ _id, paidBy, amount }: any) => {
+      return {
+        expenseId: _id,
+        membersBalance: calculateSplit(paidBy, members, amount),
+      };
+    });
+  }
+
+  return Promise.all(updatedMemberBalances);
+};
+
+export { calculateSplit, updateMemberBalances };
