@@ -33,6 +33,10 @@ const expenseSchema = new mongoose.Schema({
     required: true,
     default: [],
   },
+  settledMembers: {
+    type: Array,
+    default: [],
+  },
 });
 
 const Expense = mongoose.model("Expense", expenseSchema);
