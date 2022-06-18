@@ -34,17 +34,21 @@ router.get(
   async (req, res) => {
     const groupId = req.params.groupId;
     const memberId = req.params.memberId;
-    const expenses = await Expense.find({ group: groupId }).populate("paidBy", {
+    const expenses = await Expense.find({
+      group: groupId,
+    }).populate("paidBy", {
       name: 1,
       _id: 1,
     });
 
     const activeExpenses = expenses.filter((expense) => {
-      return expense.settledMembers.indexOf(memberId) === -1;
+      return (
+        expense.settledMembers.indexOf(memberId) === -1 && !expense.isSettled
+      );
     });
 
     const settledExpenses = expenses.filter((expense) => {
-      return expense.settledMembers.indexOf(memberId) > -1;
+      return expense.settledMembers.indexOf(memberId) > -1 || expense.isSettled;
     });
 
     res.send({
@@ -62,11 +66,18 @@ router.post("/:expenseId/settle/:memberId", async (req, res) => {
     res.status(404).send("Expense not found");
   }
   const index = expense.settledMembers.indexOf(memberId);
-  console.log(index);
   if (index > -1) {
     expense.settledMembers.splice(index, 1);
   } else {
     expense.settledMembers.push(memberId);
+  }
+  if (
+    expense.settledMembers.length ===
+    expense.membersBalance.filter(
+      (member) => member.memberId.toString() !== expense.paidBy.toString()
+    ).length
+  ) {
+    expense.isSettled = true;
   }
   await expense.save();
   res.send(expense);
@@ -82,6 +93,15 @@ router.post("/:expenseId/revert/:memberId", async (req, res) => {
   const index = expense.settledMembers.indexOf(memberId);
   if (index > -1) {
     expense.settledMembers.splice(index, 1);
+  }
+
+  if (
+    expense.settledMembers.length !==
+    expense.membersBalance.filter(
+      (member) => member.memberId.toString() !== expense.paidBy.toString()
+    ).length
+  ) {
+    expense.isSettled = false;
   }
   await expense.save();
   res.send(expense);

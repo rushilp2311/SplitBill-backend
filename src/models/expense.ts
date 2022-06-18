@@ -37,6 +37,11 @@ const expenseSchema = new mongoose.Schema({
     type: Array,
     default: [],
   },
+
+  isSettled: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Expense = mongoose.model("Expense", expenseSchema);
