@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "build": "babel src --extensions .js,.ts,.tsx --out-dir dist",
+    "build": "tsc --build",
     "lint": "eslint --ignore-path .gitignore --ext .js,.ts,.tsx .",
     "check-types": "tsc",
     "prettier": "prettier --ignore-path .gitignore node_modules \"**/*.+(js|json|ts|tsx)\" --loglevel silent --write",
