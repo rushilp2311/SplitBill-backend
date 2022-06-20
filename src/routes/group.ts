@@ -41,7 +41,7 @@ router.get("/:groupId", authMiddleWare, async (req, res) => {
       password: 0,
     })
     .lean({ virtuals: true });
-  if (!group._id) {
+  if (!group?._id) {
     res.status(404).send("Group not found");
   }
   const totalExpenses = await Expense.countDocuments({ group: group._id });
@@ -126,10 +126,12 @@ router.delete("/:groupId", authMiddleWare, async (req, res) => {
     res.status(404).send("Group not found");
   }
 
-  const expenses = await Expense.deleteMany({group: new mongoose.Types.ObjectId(group._id)})
+  const expenses = await Expense.deleteMany({
+    group: new mongoose.Types.ObjectId(group._id),
+  });
   const result = await Group.deleteOne({ _id: groupId });
 
-  return res.send('Group Deleted');
+  return res.send("Group Deleted");
 });
 
 export default router;
