@@ -105,7 +105,8 @@ router.get("/", async (req, res) => {
   const parsedUserIds = JSON.parse(userIds);
 
   if (!parsedUserIds || parsedUserIds.length < 1)
-    res.status(400).send("User Ids array is emtpy");
+    return res.send([]);
+  
   const result = await User.find(
     {
       _id: {
@@ -114,7 +115,7 @@ router.get("/", async (req, res) => {
     },
     { name: 1, _id: 1 }
   ).lean();
-  res.send(result);
+  return res.send(result);
 });
 
 export default router;
