@@ -99,4 +99,22 @@ router.get("/expenses/:userId", async (req, res) => {
   return res.send({ lent, owe });
 });
 
+router.get("/", async (req, res) => {
+  const { userIds }: { userIds?: string } = req.query;
+
+  const parsedUserIds = JSON.parse(userIds);
+
+  if (!parsedUserIds || parsedUserIds.length < 1)
+    res.status(400).send("User Ids array is emtpy");
+  const result = await User.find(
+    {
+      _id: {
+        $in: parsedUserIds.map((id) => new mongoose.Types.ObjectId(id)),
+      },
+    },
+    { name: 1, _id: 1 }
+  ).lean();
+  res.send(result);
+});
+
 export default router;

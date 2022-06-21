@@ -7,12 +7,17 @@ const router = Router();
 
 router.post("/", authMiddleWare, async (req, res) => {
   const { groupId, paidBy, description, amount } = req.body;
-  const group = await Group.findById(groupId).populate("members", { name: 1 });
+  const group = await Group.findById(groupId);
   if (!group) {
     res.status(404).send("Group not found");
   }
 
-  const membersBalance = calculateSplit(paidBy, group.members, amount);
+  const members = await User.find(
+    { _id: { $in: group.members } },
+    { name: 1, _id: 1 }
+  ).lean();
+
+  const membersBalance = calculateSplit(paidBy, members, amount);
 
   const expense = new Expense({
     description,
