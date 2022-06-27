@@ -5,6 +5,10 @@ import { User } from "models";
 
 const router = Router();
 
+router.get("/ping", async (_, res) => {
+  res.send("Connected to Server...");
+});
+
 router.post("/", async (req, res) => {
   const { email, password } = req.body;
   const { error } = validate(req.body);
