@@ -33,3 +33,5 @@ This is a backend for the SplitBill
 MONGO_DB_URL=
 JWT_PRIVATE_KEY=
 ```
+
+#### [Linode](https://www.linode.com/?utm_source=hashnode&utm_medium=article&utm_campaign=hackathon_announcement) x [Hashnode](https://hashnode.com/) project
